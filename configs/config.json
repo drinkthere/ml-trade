@@ -1,0 +1,5 @@
+{
+    "symbol": "ETHUSDT",
+    "miniuteTradingFilePath": "datas/trading/miniute/",
+    "dailyTradingFilePath": "datas/trading/daily/"
+}

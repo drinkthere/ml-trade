@@ -1,0 +1,28 @@
+# dotenv environment variables file
+.env
+
+# next.js build output
+.next
+
+# libs
+node_modules/
+
+
+# logs
+/logs
+*.log
+
+#vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Optional eslint cache
+.eslintcache
+
+
+# System Files
+.DS_Store
+Thumbs.db
