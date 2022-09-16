@@ -1,5 +1,9 @@
 {
-    "symbol": "ETHUSDT",
-    "miniuteTradingFilePath": "datas/trading/miniute/",
-    "dailyTradingFilePath": "datas/trading/daily/"
+    "symbolList": ["BTCUSDT", "ETHUSDT"],
+    "symbolConf": {
+        "BTCUSDT": {
+            "minBalance": 0.001,
+            "minOrderAmount": 10
+        }
+    }
 }
