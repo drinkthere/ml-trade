@@ -10,6 +10,7 @@ dotenv.config();
 
 // 其他配置文件
 const configs = require("./configs/config.json");
+const { resolve } = require("path");
 const symbolList = configs.symbolList;
 const symbolConf = configs.symbolConf;
 
@@ -27,24 +28,27 @@ const binance = new Binance().options({
 // 定时更新cex的仓位, API更新
 const updateBalances = async () => {
     await binance.useServerTime();
-    binance.balance((error, balances) => {
-        if (error) {
-            return console.error(error);
-        }
-        symbolList.map((symbol) => {
-            for (let token in balances) {
-                if (token == "USDT") {
-                    currBalances["USDT"] = parseFloat(
-                        balances[token].available
-                    );
-                } else if (token + "USDT" == symbol) {
-                    currBalances[symbol] = parseFloat(
-                        balances[token].available
-                    );
-                }
+    return new Promise((resolve, reject) => {
+        binance.balance((error, balances) => {
+            if (error) {
+                return console.error(error);
             }
+            symbolList.map((symbol) => {
+                for (let token in balances) {
+                    if (token == "USDT") {
+                        currBalances["USDT"] = parseFloat(
+                            balances[token].available
+                        );
+                    } else if (token + "USDT" == symbol) {
+                        currBalances[symbol] = parseFloat(
+                            balances[token].available
+                        );
+                    }
+                }
+            });
+            // console.log(currBalances);
+            resolve();
         });
-        // console.log(currBalances);
     });
 };
 
@@ -81,8 +85,11 @@ const trade = async (symbol, delta) => {
                     await orderByBase("SELL", symbol, balance, conf);
 
                     // 如果 USDT余额不够quoteAmount 的话，就用当前余额下单
-                    await updatePrices();
-                    const quoteAmount = Math.min(conf.quoteAmount, usdtBalance);
+                    await updateBalances();
+                    const quoteAmount = Math.min(
+                        conf.quoteAmount,
+                        currBalances["USDT"]
+                    );
                     await orderByQuote("BUY", symbol, quoteAmount, conf);
                 } else if (diff > 0) {
                     // diff > 0, 平掉diff
@@ -96,7 +103,7 @@ const trade = async (symbol, delta) => {
             } else {
                 // 预测是跌
                 // 平仓
-                await orderByBase("SELL", symbol, balance);
+                await orderByBase("SELL", symbol, balance, conf);
             }
         } else {
             if (delta == 1) {
@@ -122,10 +129,11 @@ const orderByQuote = async (direction, symbol, quoteAmount, conf) => {
     const quantity =
         Math.floor(quoteAmount * Math.pow(10, conf.quoteDecimal)) /
         Math.pow(10, conf.quoteDecimal);
+    console.log("===Quote", direction, symbol, quantity);
     if (quantity < conf.minQuoteAmount) {
         return;
     }
-    console.log("===Quote", direction, symbol, quantity);
+
     if (direction == "BUY") {
         await binance.marketBuy(symbol, 0, {
             type: "MARKET",
@@ -139,9 +147,13 @@ const orderByQuote = async (direction, symbol, quoteAmount, conf) => {
     }
 };
 const orderByBase = async (direction, symbol, baseAmount, conf) => {
-    console.log("===Base", direction, baseAmount, quoteAmount);
+    console.log("===Base", direction, symbol, baseAmount);
     // 处理 baseAmount
-    const quantity = parseFloat(baseAmount.toFixed(conf.baseDecimal));
+    const quantity =
+        Math.floor(baseAmount * Math.pow(10, conf.baseDecimal)) /
+        Math.pow(10, conf.baseDecimal);
+
+    console.log("===Base", direction, symbol, quantity);
     if (quantity < conf.minBaseAmount) {
         return;
     }
