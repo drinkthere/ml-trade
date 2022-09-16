@@ -2,8 +2,11 @@
     "symbolList": ["BTCUSDT", "ETHUSDT"],
     "symbolConf": {
         "BTCUSDT": {
-            "minBalance": 0.001,
-            "minOrderAmount": 10
+            "quoteAmount": 100,
+            "minQuoteAmount": 10,
+            "minBaseAmount": 0.001,
+            "baseDecimal": 3,
+            "quoteDecimal": 1
         }
     }
 }
