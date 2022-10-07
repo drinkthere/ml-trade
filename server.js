@@ -10,7 +10,6 @@ dotenv.config();
 
 // 其他配置文件
 const configs = require("./configs/config.json");
-const { resolve } = require("path");
 const symbolList = configs.symbolList;
 const symbolConf = configs.symbolConf;
 
@@ -118,8 +117,8 @@ const trade = async (symbol, delta) => {
         }
         return { status: 1, message: "OK" };
     } catch (e) {
-        console.log(e);
-        return { status: 0, message: e.message };
+        console.log(e.body);
+        return { status: 0, message: e.body };
     }
 };
 
