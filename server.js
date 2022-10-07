@@ -72,7 +72,7 @@ const trade = async (symbol, delta) => {
         const balance = currBalances[symbol];
         const price = currPrices[symbol];
         const conf = symbolConf[symbol];
-        // console.log(balance, price, busdBalance, conf);
+        console.log(symbol, balance, price, busdBalance, conf);
         // 如果当前有仓位
         if (balance > conf.minBaseAmount) {
             if (delta == 1) {
