@@ -1,7 +1,7 @@
 {
-    "symbolList": ["BTCUSDT", "ETHUSDT"],
+    "symbolList": ["BTCBUSD", "ETHBUSD"],
     "symbolConf": {
-        "BTCUSDT": {
+        "BTCBUSD": {
             "quoteAmount": 100,
             "minQuoteAmount": 10,
             "minBaseAmount": 0.001,

@@ -34,11 +34,11 @@ const updateBalances = async () => {
             }
             symbolList.map((symbol) => {
                 for (let token in balances) {
-                    if (token == "USDT") {
-                        currBalances["USDT"] = parseFloat(
+                    if (token == "BUSD") {
+                        currBalances["BUSD"] = parseFloat(
                             balances[token].available
                         );
-                    } else if (token + "USDT" == symbol) {
+                    } else if (token + "BUSD" == symbol) {
                         currBalances[symbol] = parseFloat(
                             balances[token].available
                         );
@@ -68,11 +68,11 @@ const updatePrices = async () => {
 // 处理价格
 const trade = async (symbol, delta) => {
     try {
-        const usdtBalance = currBalances["USDT"];
+        const busdBalance = currBalances["BUSD"];
         const balance = currBalances[symbol];
         const price = currPrices[symbol];
         const conf = symbolConf[symbol];
-        // console.log(balance, price, usdtBalance, conf);
+        // console.log(balance, price, busdBalance, conf);
         // 如果当前有仓位
         if (balance > conf.minBaseAmount) {
             if (delta == 1) {
@@ -83,11 +83,11 @@ const trade = async (symbol, delta) => {
                     // abs(diff) < 最小交易量，平仓，重新购买
                     await orderByBase("SELL", symbol, balance, conf);
 
-                    // 如果 USDT余额不够quoteAmount 的话，就用当前余额下单
+                    // 如果 BUSD 余额不够quoteAmount 的话，就用当前余额下单
                     await updateBalances();
                     const quoteAmount = Math.min(
                         conf.quoteAmount,
-                        currBalances["USDT"]
+                        currBalances["BUSD"]
                     );
                     await orderByQuote("BUY", symbol, quoteAmount, conf);
                 } else if (diff > 0) {
@@ -95,7 +95,7 @@ const trade = async (symbol, delta) => {
                     await orderByQuote("SELL", symbol, diff, conf);
                 } else if (diff < 0) {
                     // diff < 0, 补齐diff
-                    if (usdtBalance > Math.abs(diff)) {
+                    if (busdBalance > Math.abs(diff)) {
                         await orderByQuote("BUY", symbol, Math.abs(diff), conf);
                     }
                 }
@@ -108,7 +108,7 @@ const trade = async (symbol, delta) => {
             if (delta == 1) {
                 // 如果当前没仓位，预测是涨
                 // 开仓
-                const quoteAmount = Math.min(conf.quoteAmount, usdtBalance);
+                const quoteAmount = Math.min(conf.quoteAmount, busdBalance);
                 await orderByQuote("BUY", symbol, quoteAmount, conf);
             } else {
                 // 如果当前没仓位，预测是跌
