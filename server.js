@@ -80,16 +80,15 @@ const trade = async (symbol, delta) => {
                 const positionAmount = balance * price["bid"];
                 const diff = positionAmount - conf.quoteAmount;
                 if (Math.abs(diff) < conf.minQuoteAmount) {
-                    // abs(diff) < 最小交易量，平仓，重新购买
-                    await orderByBase("SELL", symbol, balance, conf);
-
-                    // 如果 BUSD 余额不够quoteAmount 的话，就用当前余额下单
-                    await updateBalances();
-                    const quoteAmount = Math.min(
-                        conf.quoteAmount,
-                        currBalances["BUSD"]
-                    );
-                    await orderByQuote("BUY", symbol, quoteAmount, conf);
+                    // // abs(diff) < 最小交易量，平仓，重新购买
+                    // await orderByBase("SELL", symbol, balance, conf);
+                    // // 如果 BUSD 余额不够quoteAmount 的话，就用当前余额下单
+                    // await updateBalances();
+                    // const quoteAmount = Math.min(
+                    //     conf.quoteAmount,
+                    //     currBalances["BUSD"]
+                    // );
+                    // await orderByQuote("BUY", symbol, quoteAmount, conf);
                 } else if (diff > 0) {
                     // diff > 0, 平掉diff
                     await orderByQuote("SELL", symbol, diff, conf);
